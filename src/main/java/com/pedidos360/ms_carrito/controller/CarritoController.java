@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+// Controladores REST para la gestión del carrito de compras - Pedidos360 (v1.1.0)
 @RestController
 @RequestMapping("/api/carrito")
 public class CarritoController {
