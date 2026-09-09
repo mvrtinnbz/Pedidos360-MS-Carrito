@@ -25,7 +25,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-            // API REST: no utiliza sesiones ni CSRF
+            .cors(cors -> {})
             .csrf(csrf -> csrf.disable())
 
             // La API funciona de manera stateless
@@ -40,9 +40,10 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
 
-            // Validación del JWT
             .oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwt -> {})
+                oauth2.jwt(jwt ->
+                    jwt.jwtAuthenticationConverter(new AzureRoleConverter())
+                )
             );
 
         return http.build();
