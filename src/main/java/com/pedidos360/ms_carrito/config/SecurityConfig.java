@@ -1,8 +1,7 @@
-package com.pedidos360.ms_carrito.config;
+package com.pedidos360.ms_carrito.config; // (o ms_productos, según el microservicio)
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
@@ -15,7 +14,6 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableMethodSecurity
 public class SecurityConfig {
 
     private static final String ISSUER =
@@ -28,23 +26,18 @@ public class SecurityConfig {
             .cors(cors -> {})
             .csrf(csrf -> csrf.disable())
 
-            // La API funciona de manera stateless
             .sessionManagement(session ->
                 session.sessionCreationPolicy(
                     SessionCreationPolicy.STATELESS
                 )
             )
 
-            // Todas las peticiones requieren autenticación
+            // Todas las peticiones requieren autenticación (sin chequeo de roles)
             .authorizeHttpRequests(auth -> auth
                 .anyRequest().authenticated()
             )
 
-            .oauth2ResourceServer(oauth2 ->
-                oauth2.jwt(jwt ->
-                    jwt.jwtAuthenticationConverter(new AzureRoleConverter())
-                )
-            );
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {}));
 
         return http.build();
     }
@@ -55,15 +48,12 @@ public class SecurityConfig {
         NimbusJwtDecoder decoder =
                 (NimbusJwtDecoder) JwtDecoders.fromIssuerLocation(ISSUER);
 
-        // Validar issuer
         OAuth2TokenValidator<Jwt> issuerValidator =
                 JwtValidators.createDefaultWithIssuer(ISSUER);
 
-        // Validar audience
         OAuth2TokenValidator<Jwt> audienceValidator =
                 new AudienceValidator();
 
-        // Aplicar ambas validaciones
         OAuth2TokenValidator<Jwt> validator =
                 new DelegatingOAuth2TokenValidator<>(
                     issuerValidator,

@@ -4,7 +4,6 @@ import com.pedidos360.ms_carrito.entity.CarritoItem;
 import com.pedidos360.ms_carrito.service.CarritoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,15 +19,11 @@ public class CarritoController {
         this.service = service;
     }
 
-    // USER y ADMIN pueden consultar el carrito
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/usuario/{usuarioId}")
     public List<CarritoItem> getByUsuario(@PathVariable String usuarioId) {
         return service.obtenerPorUsuario(usuarioId);
     }
 
-    // USER y ADMIN pueden agregar productos al carrito
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping
     public ResponseEntity<CarritoItem> agregarItem(
             @RequestBody CarritoItem item) {
@@ -40,8 +35,6 @@ public class CarritoController {
                 .body(guardado);
     }
 
-    // USER y ADMIN pueden eliminar productos del carrito
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarItem(@PathVariable Long id) {
 
@@ -50,8 +43,6 @@ public class CarritoController {
         return ResponseEntity.noContent().build();
     }
 
-    // USER y ADMIN pueden vaciar el carrito
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @DeleteMapping("/usuario/{usuarioId}")
     public ResponseEntity<Void> vaciarCarrito(
             @PathVariable String usuarioId) {
